@@ -1,0 +1,13 @@
+db.user: postgres
+db.password: postgres
+db.url: jdbc:postgresql://localhost:5432/house_and_tenants
+db.driver: org.postgresql.Driver
+db.pool.size: 10
+
+hibernate.show_sql: true
+hibernate.format_sql: true
+hibernate.hbm2ddl.auto: validate
+hibernate.dialect: org.hibernate.dialect.PostgresPlusDialect
+
+liquibase.changelog: db.changelog/db.changelog-master.yaml
+liquibase.databaseAutoInitialization: true
