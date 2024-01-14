@@ -2,10 +2,14 @@ package by.stolybko.controller;
 
 import by.stolybko.database.dto.PersonRequestDTO;
 import by.stolybko.database.dto.PersonResponseDTO;
+import by.stolybko.exeption.EntityNotCreatedException;
 import by.stolybko.service.HouseService;
 import by.stolybko.service.PersonService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +49,18 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createPerson(@RequestBody PersonRequestDTO personRequestDTO) {
+    public ResponseEntity<Void> createPerson(@RequestBody @Valid PersonRequestDTO personRequestDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                errorMsg.append(error.getField())
+                        .append(" - ").append(error.getDefaultMessage())
+                        .append(";");
+            }
+            throw new EntityNotCreatedException(errorMsg.toString());
+        }
         personService.create(personRequestDTO);
         return ResponseEntity.status(201).build();
     }

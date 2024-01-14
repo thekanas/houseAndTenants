@@ -1,5 +1,6 @@
 package by.stolybko.exeption.handler;
 
+import by.stolybko.exeption.EntityNotCreatedException;
 import by.stolybko.exeption.EntityNotFoundException;
 import by.stolybko.exeption.ErrorMessage;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,13 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     public ErrorMessage handleEntityNotFoundException(EntityNotFoundException e) {
 
         return new ErrorMessage(e.getMessage(), "404");
+    }
+
+    @ExceptionHandler()
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorMessage handleEntityNotCreatedException(EntityNotCreatedException e) {
+
+        return new ErrorMessage(e.getMessage(), "400");
     }
 
 }
