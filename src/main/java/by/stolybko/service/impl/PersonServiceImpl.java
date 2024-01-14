@@ -66,7 +66,7 @@ public class PersonServiceImpl implements PersonService {
         updatedPerson.setPassport(dto.getPassport());
         updatedPerson.setHouse(house);
 
-        personRepository.save(updatedPerson);
+        personRepository.update(updatedPerson);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     public List<HouseResponseDTO> getOwnershipByPersonUuid(UUID uuid) {
-        List<HouseResponseDTO> ownership = new ArrayList<>();
         PersonEntity owner = personRepository.findByUuid(uuid).orElseThrow();
+        List<HouseResponseDTO> ownership = new ArrayList<>();
         for (HouseEntity house : owner.getOwnership()) {
             ownership.add(houseMapper.toHouseResponseDTO(house));
         }

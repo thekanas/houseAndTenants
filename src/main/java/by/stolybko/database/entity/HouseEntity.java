@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -30,9 +31,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "uuid")
+@EqualsAndHashCode(exclude = {"tenants", "owners"})
 @Entity
 @Table(name = "house")
+@FieldNameConstants
 public class HouseEntity implements BaseEntity<UUID> {
 
     @Id

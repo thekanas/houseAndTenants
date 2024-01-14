@@ -49,15 +49,9 @@ public class HouseServiceImpl implements HouseService {
     //@Transactional
     public void create(HouseRequestDTO dto) {
         HouseEntity savedHouse = houseMapper.toHouseEntity(dto);
-        List<UUID> ownersUuid = dto.getOwnersUuid();
 
-        if(ownersUuid != null && !ownersUuid.isEmpty()) {
-            savedHouse.setOwners(new ArrayList<>());
-            for (UUID uuid : ownersUuid) {
-                PersonEntity owner = personRepository.findByUuid(uuid).orElseThrow();
-                savedHouse.addOwner(owner);
-            }
-        }
+        setOwners(savedHouse, dto);
+
         houseRepository.save(savedHouse);
     }
 
@@ -71,7 +65,9 @@ public class HouseServiceImpl implements HouseService {
         updatedHouse.setStreet(dto.getStreet());
         updatedHouse.setNumber(dto.getNumber());
 
-        houseRepository.save(updatedHouse);
+        setOwners(updatedHouse, dto);
+
+        houseRepository.update(updatedHouse);
     }
 
     @Override
@@ -87,6 +83,17 @@ public class HouseServiceImpl implements HouseService {
             tenants.add(personMapper.toPersonResponseDTO(tenant));
         }
         return tenants;
+    }
+
+    private void setOwners(HouseEntity house, HouseRequestDTO dto) {
+        List<UUID> ownersUuid = dto.getOwnersUuid();
+        if(ownersUuid != null && !ownersUuid.isEmpty()) {
+            house.setOwners(new ArrayList<>());
+            for (UUID ownerUuid : ownersUuid) {
+                PersonEntity owner = personRepository.findByUuid(ownerUuid).orElseThrow();
+                house.addOwner(owner);
+            }
+        }
     }
 
 }
