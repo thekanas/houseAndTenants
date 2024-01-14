@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -68,6 +69,12 @@ public class PersonController {
     @PutMapping("/{uuid}")
     public ResponseEntity<Void> updatePerson(@PathVariable(name = "uuid") UUID uuid, @RequestBody PersonRequestDTO personRequestDTO) {
         personService.update(uuid, personRequestDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{uuid}")
+    public ResponseEntity<Void> patchPerson(@PathVariable(name = "uuid") UUID uuid, @RequestBody PersonRequestDTO personRequestDTO) {
+        personService.patch(uuid, personRequestDTO);
         return ResponseEntity.ok().build();
     }
 

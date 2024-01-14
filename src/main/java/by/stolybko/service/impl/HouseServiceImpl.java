@@ -7,19 +7,21 @@ import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
 import by.stolybko.database.repository.HouseRepository;
 import by.stolybko.database.repository.PersonRepository;
+import by.stolybko.exeption.EntityNotFoundException;
 import by.stolybko.service.HouseService;
 import by.stolybko.service.mapper.HouseMapper;
 import by.stolybko.service.mapper.PersonMapper;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class HouseServiceImpl implements HouseService {
 
@@ -31,7 +33,7 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public HouseResponseDTO getByUuid(UUID uuid) {
         HouseEntity houseEntity = houseRepository.findByUuid(uuid)
-                .orElseThrow();
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, uuid));
 
         return houseMapper.toHouseResponseDTO(houseEntity);
     }
@@ -46,7 +48,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    //@Transactional
+    @Transactional
     public void create(HouseRequestDTO dto) {
         HouseEntity savedHouse = houseMapper.toHouseEntity(dto);
 
@@ -56,14 +58,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    //@Transactional
+    @Transactional
     public void update(UUID uuid, HouseRequestDTO dto) {
-        HouseEntity updatedHouse = houseRepository.findByUuid(uuid).orElseThrow();
-        updatedHouse.setArea(dto.getArea());
-        updatedHouse.setCountry(dto.getCountry());
-        updatedHouse.setCity(dto.getCity());
-        updatedHouse.setStreet(dto.getStreet());
-        updatedHouse.setNumber(dto.getNumber());
+        HouseEntity updatedHouse = houseRepository.findByUuid(uuid)
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, uuid));
+        updatedHouse = houseMapper.update(updatedHouse, dto);
 
         setOwners(updatedHouse, dto);
 
@@ -71,14 +70,28 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    //@Transactional
+    @Transactional
+    public void patch(UUID uuid, HouseRequestDTO dto) {
+        HouseEntity updatedHouse = houseRepository.findByUuid(uuid)
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, uuid));
+        updatedHouse = houseMapper.merge(updatedHouse, dto);
+
+        setOwners(updatedHouse, dto);
+
+        houseRepository.update(updatedHouse);
+    }
+
+    @Override
+    @Transactional
     public void delete(UUID uuid) {
         houseRepository.delete(uuid);
     }
 
+    @Transactional
     public List<PersonResponseDTO> getTenantsByHouseUuid(UUID uuid) {
         List<PersonResponseDTO> tenants = new ArrayList<>();
-        HouseEntity house = houseRepository.findByUuid(uuid).orElseThrow();
+        HouseEntity house = houseRepository.findByUuid(uuid)
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, uuid));
         for (PersonEntity tenant : house.getTenants()) {
             tenants.add(personMapper.toPersonResponseDTO(tenant));
         }
@@ -88,9 +101,16 @@ public class HouseServiceImpl implements HouseService {
     private void setOwners(HouseEntity house, HouseRequestDTO dto) {
         List<UUID> ownersUuid = dto.getOwnersUuid();
         if(ownersUuid != null && !ownersUuid.isEmpty()) {
-            house.setOwners(new ArrayList<>());
+            for(PersonEntity person : house.getOwners()) {
+                person.getOwnership().remove(house);
+            }
+            house.getOwners().clear();
+            houseRepository.getEntityManager().flush();
+            personRepository.getEntityManager().flush();
+
             for (UUID ownerUuid : ownersUuid) {
-                PersonEntity owner = personRepository.findByUuid(ownerUuid).orElseThrow();
+                PersonEntity owner = personRepository.findByUuid(ownerUuid)
+                        .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, ownerUuid));
                 house.addOwner(owner);
             }
         }

@@ -1,6 +1,7 @@
 package by.stolybko.database.entity;
 
 import by.stolybko.database.entity.enam.Sex;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -49,11 +50,7 @@ public class PersonEntity implements BaseEntity<UUID> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private UUID uuid;
-
-    @NotEmpty(message = "Name should not be empty")
     private String name;
-
-    @NotEmpty(message = "Surname should not be empty")
     private String surname;
 
     @Enumerated(EnumType.STRING)
@@ -62,8 +59,8 @@ public class PersonEntity implements BaseEntity<UUID> {
     @Embedded
     private Passport passport;
 
-    @ManyToOne
-    @JoinColumn(name = "house_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "house_id", nullable = false)
     private HouseEntity house;
 
     @Column(name = "create_date")
@@ -88,11 +85,6 @@ public class PersonEntity implements BaseEntity<UUID> {
     @PrePersist
     protected void onCreate() {
         uuid = UUID.randomUUID();
-    }
-
-    public void addHouse(HouseEntity house) {
-        ownership.add(house);
-        house.getOwners().add(this);
     }
 
 }

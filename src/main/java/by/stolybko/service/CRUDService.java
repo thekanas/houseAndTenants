@@ -9,6 +9,7 @@ public interface CRUDService<Response, Request> {
     List<Response> getAll();
     void create(Request dto);
     void update(UUID uuid, Request dto);
+    void patch(UUID uuid, Request dto);
     void delete(UUID uuid);
 
 }

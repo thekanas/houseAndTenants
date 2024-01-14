@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Root;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ public abstract class RepositoryBase<K extends Serializable, E extends BaseEntit
 
     private final Class<E> clazz;
 
+    @Getter
     @PersistenceContext
     private EntityManager entityManager;
 

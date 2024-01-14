@@ -37,8 +37,9 @@ CREATE INDEX person_uuid
 
 CREATE TABLE IF NOT EXISTS owner
 (
-    person_id BIGINT REFERENCES person (id),
-    house_id  BIGINT REFERENCES house (id)
+    person_id BIGINT REFERENCES person (id) ON DELETE CASCADE ,
+    house_id  BIGINT REFERENCES house (id) ON DELETE CASCADE ,
+    PRIMARY KEY (person_id, house_id)
 
 );
 

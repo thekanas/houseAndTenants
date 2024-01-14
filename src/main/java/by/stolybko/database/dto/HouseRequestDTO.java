@@ -12,7 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class HouseRequestDTO {
 
-    private UUID uuid;
     private String area;
     private String country;
     private String city;

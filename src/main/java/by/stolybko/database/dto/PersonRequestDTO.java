@@ -15,11 +15,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PersonRequestDTO {
 
-    @NotBlank(message = "Name not be empty")
     @Size(min = 2, max = 40, message = "Name should be between 2 and 40 characters")
     private String name;
 
-    @NotBlank(message = "Surname not be empty")
     @Size(min = 2, max = 40, message = "Surname should be between 2 and 40 characters")
     private String surname;
     private Sex sex;

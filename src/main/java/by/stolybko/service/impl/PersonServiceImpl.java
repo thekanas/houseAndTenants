@@ -11,9 +11,10 @@ import by.stolybko.exeption.EntityNotFoundException;
 import by.stolybko.service.PersonService;
 import by.stolybko.service.mapper.HouseMapper;
 import by.stolybko.service.mapper.PersonMapper;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
@@ -47,36 +48,53 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    //@Transactional
+    @Transactional
     public void create(PersonRequestDTO dto) {
         PersonEntity savedPerson = personMapper.toPersonEntity(dto);
-        HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid()).orElseThrow();
+        HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid())
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, dto.getHouseUuid()));
         savedPerson.setHouse(house);
         personRepository.save(savedPerson);
     }
 
     @Override
-    //@Transactional
+    @Transactional
     public void update(UUID uuid, PersonRequestDTO dto) {
-        PersonEntity updatedPerson = personRepository.findByUuid(uuid).orElseThrow();
-        HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid()).orElseThrow();
-        updatedPerson.setName(dto.getName());
-        updatedPerson.setSurname(dto.getSurname());
-        updatedPerson.setSex(dto.getSex());
-        updatedPerson.setPassport(dto.getPassport());
+        PersonEntity updatedPerson = personRepository.findByUuid(uuid)
+                .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, uuid));
+        HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid())
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, dto.getHouseUuid()));
+        updatedPerson = personMapper.update(updatedPerson, dto);
         updatedPerson.setHouse(house);
 
         personRepository.update(updatedPerson);
     }
 
+    @Transactional
+    public void patch(UUID uuid, PersonRequestDTO dto) {
+        PersonEntity updatedPerson = personRepository.findByUuid(uuid)
+                .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, uuid));
+
+        updatedPerson = personMapper.merge(updatedPerson, dto);
+        UUID houseUuid = dto.getHouseUuid();
+        if(houseUuid != null) {
+            HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid())
+                    .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, houseUuid));
+            updatedPerson.setHouse(house);
+        }
+        personRepository.update(updatedPerson);
+    }
+
     @Override
-    //@Transactional
+    @Transactional
     public void delete(UUID uuid) {
         personRepository.delete(uuid);
     }
 
+    @Transactional
     public List<HouseResponseDTO> getOwnershipByPersonUuid(UUID uuid) {
-        PersonEntity owner = personRepository.findByUuid(uuid).orElseThrow();
+        PersonEntity owner = personRepository.findByUuid(uuid)
+                .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, uuid));
         List<HouseResponseDTO> ownership = new ArrayList<>();
         for (HouseEntity house : owner.getOwnership()) {
             ownership.add(houseMapper.toHouseResponseDTO(house));
