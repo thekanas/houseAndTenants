@@ -3,7 +3,6 @@ package by.stolybko.controller;
 import by.stolybko.database.dto.HouseRequestDTO;
 import by.stolybko.database.dto.HouseResponseDTO;
 import by.stolybko.service.HouseService;
-import by.stolybko.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,12 +19,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/house")
+@RequestMapping("/houses")
 @RequiredArgsConstructor
 public class HouseController {
 
     private final HouseService houseService;
-    private final PersonService personService;
 
     @GetMapping()
     public ResponseEntity<List<HouseResponseDTO>> getAllHouses() {
@@ -34,14 +32,14 @@ public class HouseController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<HouseResponseDTO> getByUuidHouse(@PathVariable(name = "uuid") UUID uuid) {
+    public ResponseEntity<HouseResponseDTO> getByUuidHouse(@PathVariable UUID uuid) {
         HouseResponseDTO houseResponseDTO = houseService.getByUuid(uuid);
         return ResponseEntity.ok().body(houseResponseDTO);
     }
 
     @GetMapping("/owner/{uuid}")
-    public ResponseEntity<List<HouseResponseDTO>> getOwnershipByPersonUuid(@PathVariable(name = "uuid") UUID uuid) {
-        List<HouseResponseDTO> ownership = personService.getOwnershipByPersonUuid(uuid);
+    public ResponseEntity<List<HouseResponseDTO>> getOwnershipByPersonUuid(@PathVariable UUID uuid) {
+        List<HouseResponseDTO> ownership = houseService.getOwnershipByPersonUuid(uuid);
         return ResponseEntity.ok().body(ownership);
     }
 
@@ -52,19 +50,19 @@ public class HouseController {
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<Void> updateHouse(@PathVariable(name = "uuid") UUID uuid, @RequestBody HouseRequestDTO houseRequestDTO) {
+    public ResponseEntity<Void> updateHouse(@PathVariable UUID uuid, @RequestBody HouseRequestDTO houseRequestDTO) {
         houseService.update(uuid, houseRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{uuid}")
-    public ResponseEntity<Void> patchHouse(@PathVariable(name = "uuid") UUID uuid, @RequestBody HouseRequestDTO houseRequestDTO) {
+    public ResponseEntity<Void> patchHouse(@PathVariable UUID uuid, @RequestBody HouseRequestDTO houseRequestDTO) {
         houseService.patch(uuid, houseRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deleteHouse(@PathVariable(name = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deleteHouse(@PathVariable UUID uuid) {
         houseService.delete(uuid);
         return ResponseEntity.ok().build();
     }

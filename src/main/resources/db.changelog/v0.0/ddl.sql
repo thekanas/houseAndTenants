@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS house
     city        VARCHAR(50)  NOT NULL,
     street      VARCHAR(128) NOT NULL,
     number      VARCHAR(10)  NOT NULL,
-    create_date TIMESTAMP
+    create_date TIMESTAMP    NOT NULL
 
 );
 
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS person
     passport_series VARCHAR(20),
     passport_number VARCHAR(20),
     house_id        BIGINT REFERENCES house (id),
-    create_date     TIMESTAMP,
-    update_date     TIMESTAMP,
+    create_date     TIMESTAMP    NOT NULL,
+    update_date     TIMESTAMP    NOT NULL,
     UNIQUE (passport_series, passport_number)
 
 );
@@ -37,8 +37,8 @@ CREATE INDEX person_uuid
 
 CREATE TABLE IF NOT EXISTS owner
 (
-    person_id BIGINT REFERENCES person (id) ON DELETE CASCADE ,
-    house_id  BIGINT REFERENCES house (id) ON DELETE CASCADE ,
+    person_id BIGINT REFERENCES person (id) ON DELETE CASCADE,
+    house_id  BIGINT REFERENCES house (id) ON DELETE CASCADE,
     PRIMARY KEY (person_id, house_id)
 
 );

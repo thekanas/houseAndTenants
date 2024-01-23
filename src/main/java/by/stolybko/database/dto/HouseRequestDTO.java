@@ -1,22 +1,18 @@
 package by.stolybko.database.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.util.List;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class HouseRequestDTO {
 
-    private String area;
-    private String country;
-    private String city;
-    private String street;
-    private String number;
-    private List<UUID> ownersUuid;
+    String area;
+    String country;
+    String city;
+    String street;
+    String number;
+    List<UUID> ownersUuid;
 
 }

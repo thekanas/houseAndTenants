@@ -2,29 +2,28 @@ package by.stolybko.database.dto;
 
 import by.stolybko.database.entity.Passport;
 import by.stolybko.database.entity.enam.Sex;
+import by.stolybko.util.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class PersonResponseDTO {
 
-    private UUID uuid;
-    private String name;
-    private String surname;
-    private Sex sex;
-    private Passport passport;
+    UUID uuid;
+    String name;
+    String surname;
+    Sex sex;
+    Passport passport;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss:SSS")
-    private LocalDateTime createDate;
+    @JsonFormat(pattern = Constants.TIME_FORMAT_RESPONSE)
+    LocalDateTime createDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss:SSS")
-    private LocalDateTime updateDate;
+    @JsonFormat(pattern = Constants.TIME_FORMAT_RESPONSE)
+    LocalDateTime updateDate;
 
 }
+
+

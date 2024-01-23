@@ -26,6 +26,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +35,6 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"tenants", "owners"})
 @Entity
 @Table(name = "house")
 @FieldNameConstants
@@ -57,11 +57,13 @@ public class HouseEntity implements BaseEntity<UUID> {
     private LocalDateTime createDate;
 
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "house")
     private List<PersonEntity> tenants = new ArrayList<>();
 
     @ManyToMany
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @JoinTable(name = "owner",
             joinColumns = @JoinColumn(name = "house_id"),
             inverseJoinColumns = @JoinColumn(name = "person_id"))

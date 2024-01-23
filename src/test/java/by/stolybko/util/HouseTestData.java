@@ -4,17 +4,9 @@ import by.stolybko.database.dto.HouseRequestDTO;
 import by.stolybko.database.dto.HouseResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,12 +45,15 @@ public class HouseTestData {
     @Builder.Default
     private List<PersonEntity> owners = new ArrayList<>();
 
+    @Builder.Default
+    private List<UUID> ownersUuid = new ArrayList<>();
+
     public HouseEntity buildHouseEntity() {
         return new HouseEntity(1L, houseUuid, area, country, city, street, number, createDate, tenants, owners);
     }
 
     public HouseRequestDTO buildHouseRequestDTO() {
-        return new HouseRequestDTO(houseUuid, area, country, city, street, number, new ArrayList<>());
+        return new HouseRequestDTO(area, country, city, street, number, ownersUuid);
     }
 
     public HouseResponseDTO buildHouseResponseDTO() {

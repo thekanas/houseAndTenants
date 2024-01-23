@@ -2,14 +2,11 @@ package by.stolybko.service.impl;
 
 import by.stolybko.database.dto.HouseRequestDTO;
 import by.stolybko.database.dto.HouseResponseDTO;
-import by.stolybko.database.dto.PersonRequestDTO;
-import by.stolybko.database.dto.PersonResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
 import by.stolybko.database.repository.HouseRepository;
 import by.stolybko.database.repository.PersonRepository;
 import by.stolybko.service.mapper.HouseMapper;
-import by.stolybko.service.mapper.PersonMapper;
 import by.stolybko.util.HouseTestData;
 import by.stolybko.util.PersonTestData;
 import org.junit.jupiter.api.Test;
@@ -20,22 +17,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
 class HouseServiceImplTest {
-    // given
-    // when
-    // then
+
     @Mock
     private HouseRepository houseRepository;
 
@@ -47,9 +43,6 @@ class HouseServiceImplTest {
 
     @Captor
     private ArgumentCaptor<HouseEntity> houseCaptor;
-
-    @Mock
-    private PersonMapper personMapper;
 
     @InjectMocks
     private HouseServiceImpl houseService;
@@ -115,16 +108,17 @@ class HouseServiceImplTest {
     void createShouldSetOwnersIfPresent_whenInvoke() {
 
         // given
-        HouseRequestDTO houseRequestDTO = HouseTestData.builder()
-                .build().buildHouseRequestDTO();
-        HouseEntity houseEntity = HouseTestData.builder()
-                .build().buildHouseEntity();
-
         UUID ownerUuid1 = UUID.fromString("c114c54f-9d37-4763-ab7e-db03caf9dad6");
         UUID ownerUuid2 = UUID.fromString("c214c54f-9d37-4763-ab7e-db03caf9dad6");
 
         List<UUID> ownersUuid = List.of(ownerUuid1, ownerUuid2);
-        houseRequestDTO.setOwnersUuid(ownersUuid);
+
+        HouseRequestDTO houseRequestDTO = HouseTestData.builder()
+                .build()
+                .setOwnersUuid(ownersUuid)
+                .buildHouseRequestDTO();
+        HouseEntity houseEntity = HouseTestData.builder()
+                .build().buildHouseEntity();
 
         PersonEntity owner1 = PersonTestData.builder()
                 .withPersonUuid(ownerUuid1)
@@ -157,18 +151,22 @@ class HouseServiceImplTest {
         // given
         UUID houseUuid = HouseTestData.builder()
                 .build().getHouseUuid();
-        HouseRequestDTO houseRequestDTO = HouseTestData.builder()
-                .withCity("Gomel")
-                .withNumber("99")
-                .build().buildHouseRequestDTO();
-        HouseEntity houseOld = HouseTestData.builder()
-                .build().buildHouseEntity();
 
         UUID ownerUuid1 = UUID.fromString("c114c54f-9d37-4763-ab7e-db03caf9dad6");
         UUID ownerUuid2 = UUID.fromString("c214c54f-9d37-4763-ab7e-db03caf9dad6");
 
-        List<UUID> ownersUuid = List.of(ownerUuid1, ownerUuid2);
-        houseRequestDTO.setOwnersUuid(ownersUuid);
+        List<UUID> ownersUuid = new ArrayList<>();
+        ownersUuid.add(ownerUuid1);
+        ownersUuid.add(ownerUuid2);
+
+        HouseRequestDTO houseRequestDTO = HouseTestData.builder()
+                .withCity("Gomel")
+                .withNumber("99")
+                .withOwnersUuid(ownersUuid)
+                .build().buildHouseRequestDTO();
+        HouseEntity houseOld = HouseTestData.builder()
+                .build().buildHouseEntity();
+
 
         PersonEntity owner1 = PersonTestData.builder()
                 .withPersonUuid(ownerUuid1)
@@ -177,7 +175,9 @@ class HouseServiceImplTest {
                 .withPersonUuid(ownerUuid2)
                 .build().buildPersonEntity();
 
-        List<PersonEntity> owners = List.of(owner1, owner2);
+        List<PersonEntity> owners = new ArrayList<>();
+        owners.add(owner1);
+        owners.add(owner2);
 
         HouseEntity houseUpdate = HouseTestData.builder()
                 .withCity("Gomel")
@@ -187,6 +187,8 @@ class HouseServiceImplTest {
 
         when(houseRepository.findByUuid(houseUuid))
                 .thenReturn(Optional.of(houseOld));
+        when(houseMapper.update(any(), any()))
+                .thenReturn(houseUpdate);
         when(personRepository.findByUuid(ownerUuid1))
                 .thenReturn(Optional.of(owner1));
         when(personRepository.findByUuid(ownerUuid2))
@@ -215,44 +217,43 @@ class HouseServiceImplTest {
         verify(houseRepository).delete(uuid);
     }
 
+
+
     @Test
-    void getTenantsByHouseUuidTest() {
+    void getOwnershipByPersonUuidTest() {
 
         // given
-        UUID uuid = HouseTestData.builder().build().getHouseUuid();
-        UUID tenantUuid1 = UUID.fromString("c114c54f-9d37-4763-ab7e-db03caf9dad6");
-        UUID tenantUuid2 = UUID.fromString("c214c54f-9d37-4763-ab7e-db03caf9dad6");
-
-
-        PersonEntity tenant1 = PersonTestData.builder()
-                .withPersonUuid(tenantUuid1)
-                .build().buildPersonEntity();
-        PersonEntity tenant2 = PersonTestData.builder()
-                .withPersonUuid(tenantUuid2)
-                .build().buildPersonEntity();
-        PersonResponseDTO personResponseDTO1 = PersonTestData.builder()
-                .withPersonUuid(tenantUuid1)
-                .build().buildPersonResponseDTO();
-        PersonResponseDTO personResponseDTO2 = PersonTestData.builder()
-                .withPersonUuid(tenantUuid2)
-                .build().buildPersonResponseDTO();
-
-        List<PersonEntity> tenants = List.of(tenant1, tenant2);
-        List<PersonResponseDTO> expected = List.of(personResponseDTO1, personResponseDTO2);
-
-        HouseEntity house = HouseTestData.builder()
-                .withTenants(tenants)
+        HouseEntity houseEntity1 = HouseTestData.builder()
+                .withNumber("51")
                 .build().buildHouseEntity();
+        HouseEntity houseEntity2 = HouseTestData.builder()
+                .withNumber("52")
+                .build().buildHouseEntity();
+        HouseResponseDTO houseResponseDTO1 = HouseTestData.builder()
+                .withNumber("51")
+                .build().buildHouseResponseDTO();
+        HouseResponseDTO houseResponseDTO2 = HouseTestData.builder()
+                .withNumber("52")
+                .build().buildHouseResponseDTO();
 
-        when(houseRepository.findByUuid(uuid))
-                .thenReturn(Optional.of(house));
-        when(personMapper.toPersonResponseDTO(tenant1))
-                .thenReturn(personResponseDTO1);
-        when(personMapper.toPersonResponseDTO(tenant2))
-                .thenReturn(personResponseDTO2);
+        List<HouseEntity> ownership = List.of(houseEntity1, houseEntity2);
+        List<HouseResponseDTO> expected = List.of(houseResponseDTO1, houseResponseDTO2);
+
+        UUID personUuid = PersonTestData.builder()
+                .build().getPersonUuid();
+        PersonEntity personEntity = PersonTestData.builder()
+                .build().buildPersonEntity();
+        personEntity.setOwnership(ownership);
+
+        when(personRepository.findByUuid(personUuid))
+                .thenReturn(Optional.of(personEntity));
+        when(houseMapper.toHouseResponseDTO(houseEntity1))
+                .thenReturn(houseResponseDTO1);
+        when(houseMapper.toHouseResponseDTO(houseEntity2))
+                .thenReturn(houseResponseDTO2);
 
         // when
-        List<PersonResponseDTO> actual = houseService.getTenantsByHouseUuid(uuid);
+        List<HouseResponseDTO> actual = houseService.getOwnershipByPersonUuid(personUuid);
 
         // then
         assertIterableEquals(expected, actual);

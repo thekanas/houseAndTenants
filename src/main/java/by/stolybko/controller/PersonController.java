@@ -2,14 +2,12 @@ package by.stolybko.controller;
 
 import by.stolybko.database.dto.PersonRequestDTO;
 import by.stolybko.database.dto.PersonResponseDTO;
-import by.stolybko.exeption.EntityNotCreatedException;
-import by.stolybko.service.HouseService;
 import by.stolybko.service.PersonService;
-import jakarta.validation.Valid;
+
+import by.stolybko.validation.PersonValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,16 +18,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/persons")
 @RequiredArgsConstructor
 public class PersonController {
 
     private final PersonService personService;
-    private final HouseService houseService;
+    private final PersonValidator validator;
 
     @GetMapping()
     public ResponseEntity<List<PersonResponseDTO>> getAllPersons() {
@@ -38,48 +37,38 @@ public class PersonController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<PersonResponseDTO> getByUuidPerson(@PathVariable(name = "uuid") UUID uuid) {
+    public ResponseEntity<PersonResponseDTO> getByUuidPerson(@PathVariable UUID uuid) {
         PersonResponseDTO personResponseDTO = personService.getByUuid(uuid);
         return ResponseEntity.ok().body(personResponseDTO);
     }
 
     @GetMapping("/house/{uuid}")
-    public ResponseEntity<List<PersonResponseDTO>> getTenantsByHouseUuid(@PathVariable(name = "uuid") UUID uuid) {
-        List<PersonResponseDTO> personResponseDTOList = houseService.getTenantsByHouseUuid(uuid);
+    public ResponseEntity<List<PersonResponseDTO>> getTenantsByHouseUuid(@PathVariable UUID uuid) {
+        List<PersonResponseDTO> personResponseDTOList = personService.getTenantsByHouseUuid(uuid);
         return ResponseEntity.ok().body(personResponseDTOList);
     }
 
     @PostMapping
-    public ResponseEntity<Void> createPerson(@RequestBody @Valid PersonRequestDTO personRequestDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder();
-
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors) {
-                errorMsg.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-            throw new EntityNotCreatedException(errorMsg.toString());
-        }
+    public ResponseEntity<Void> createPerson(@RequestBody @Valid PersonRequestDTO personRequestDTO) {
+        validator.validate(personRequestDTO);
         personService.create(personRequestDTO);
         return ResponseEntity.status(201).build();
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<Void> updatePerson(@PathVariable(name = "uuid") UUID uuid, @RequestBody PersonRequestDTO personRequestDTO) {
+    public ResponseEntity<Void> updatePerson(@PathVariable UUID uuid, @RequestBody PersonRequestDTO personRequestDTO) {
         personService.update(uuid, personRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{uuid}")
-    public ResponseEntity<Void> patchPerson(@PathVariable(name = "uuid") UUID uuid, @RequestBody PersonRequestDTO personRequestDTO) {
+    public ResponseEntity<Void> patchPerson(@PathVariable UUID uuid, @RequestBody PersonRequestDTO personRequestDTO) {
         personService.patch(uuid, personRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deletePerson(@PathVariable(name = "uuid") UUID uuid) {
+    public ResponseEntity<Void> deletePerson(@PathVariable UUID uuid) {
         personService.delete(uuid);
         return ResponseEntity.ok().build();
     }

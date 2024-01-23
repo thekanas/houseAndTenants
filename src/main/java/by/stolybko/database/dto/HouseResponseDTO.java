@@ -1,26 +1,23 @@
 package by.stolybko.database.dto;
 
+import by.stolybko.util.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class HouseResponseDTO {
 
-    private UUID uuid;
-    private String area;
-    private String country;
-    private String city;
-    private String street;
-    private String number;
+    UUID uuid;
+    String area;
+    String country;
+    String city;
+    String street;
+    String number;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss:SSS")
-    private LocalDateTime createDate;
+    @JsonFormat(pattern = Constants.TIME_FORMAT_RESPONSE)
+    LocalDateTime createDate;
 
 }

@@ -1,6 +1,5 @@
 package by.stolybko.service.impl;
 
-import by.stolybko.database.dto.HouseResponseDTO;
 import by.stolybko.database.dto.PersonRequestDTO;
 import by.stolybko.database.dto.PersonResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
@@ -11,7 +10,6 @@ import by.stolybko.exeption.EntityNotFoundException;
 import by.stolybko.service.PersonService;
 import by.stolybko.service.mapper.HouseMapper;
 import by.stolybko.service.mapper.PersonMapper;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,8 +49,8 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public void create(PersonRequestDTO dto) {
         PersonEntity savedPerson = personMapper.toPersonEntity(dto);
-        HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid())
-                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, dto.getHouseUuid()));
+        HouseEntity house = houseRepository.findByUuid(dto.houseUuid())
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, dto.houseUuid()));
         savedPerson.setHouse(house);
         personRepository.save(savedPerson);
     }
@@ -62,8 +60,8 @@ public class PersonServiceImpl implements PersonService {
     public void update(UUID uuid, PersonRequestDTO dto) {
         PersonEntity updatedPerson = personRepository.findByUuid(uuid)
                 .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, uuid));
-        HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid())
-                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, dto.getHouseUuid()));
+        HouseEntity house = houseRepository.findByUuid(dto.houseUuid())
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, dto.houseUuid()));
         updatedPerson = personMapper.update(updatedPerson, dto);
         updatedPerson.setHouse(house);
 
@@ -76,9 +74,9 @@ public class PersonServiceImpl implements PersonService {
                 .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, uuid));
 
         updatedPerson = personMapper.merge(updatedPerson, dto);
-        UUID houseUuid = dto.getHouseUuid();
+        UUID houseUuid = dto.houseUuid();
         if(houseUuid != null) {
-            HouseEntity house = houseRepository.findByUuid(dto.getHouseUuid())
+            HouseEntity house = houseRepository.findByUuid(dto.houseUuid())
                     .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, houseUuid));
             updatedPerson.setHouse(house);
         }
@@ -91,15 +89,17 @@ public class PersonServiceImpl implements PersonService {
         personRepository.delete(uuid);
     }
 
-    @Transactional
-    public List<HouseResponseDTO> getOwnershipByPersonUuid(UUID uuid) {
-        PersonEntity owner = personRepository.findByUuid(uuid)
-                .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, uuid));
-        List<HouseResponseDTO> ownership = new ArrayList<>();
-        for (HouseEntity house : owner.getOwnership()) {
-            ownership.add(houseMapper.toHouseResponseDTO(house));
+
+
+    @Override
+    public List<PersonResponseDTO> getTenantsByHouseUuid(UUID uuid) {
+        List<PersonResponseDTO> tenants = new ArrayList<>();
+        HouseEntity house = houseRepository.findByUuid(uuid)
+                .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, uuid));
+        for (PersonEntity tenant : house.getTenants()) {
+            tenants.add(personMapper.toPersonResponseDTO(tenant));
         }
-        return ownership;
+        return tenants;
     }
 
 }

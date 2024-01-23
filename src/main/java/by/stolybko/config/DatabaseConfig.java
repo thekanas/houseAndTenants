@@ -2,11 +2,16 @@ package by.stolybko.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -15,24 +20,28 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
+@EnableTransactionManagement(proxyTargetClass = true)
 @ComponentScan("by.stolybko")
 @PropertySource({"classpath:application.yml"})
-@EnableTransactionManagement(proxyTargetClass = true)
 public class DatabaseConfig {
 
-    @Value("${db.driver}")
+    @Value("${database.driver}")
     private String driver;
 
-    @Value("${db.url}")
+    @Value("${database.url}")
     private String url;
 
-    @Value("${db.user}")
+    @Value("${database.user}")
     private String username;
 
-    @Value("${db.password}")
+    @Value("${database.password}")
     private String password;
 
     @Value("${hibernate.dialect}")
@@ -46,6 +55,16 @@ public class DatabaseConfig {
 
     @Value("${hibernate.format_sql}")
     private String formatSql;
+
+        @Bean
+    public static BeanFactoryPostProcessor beanFactoryPostProcessor() {
+        PropertySourcesPlaceholderConfigurer configure = new PropertySourcesPlaceholderConfigurer();
+        YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+        yaml.setResources(new ClassPathResource("application.yml"));
+        Properties yamlObject = Objects.requireNonNull(yaml.getObject(), "Yaml not found.");
+        configure.setProperties(yamlObject);
+        return configure;
+    }
 
     @Bean
     public DataSource dataSource() {
@@ -90,6 +109,13 @@ public class DatabaseConfig {
     @Bean
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource());
+    }
+
+    @Bean
+    public Validator validator() {
+        try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
+            return validatorFactory.getValidator();
+        }
     }
 
 }
