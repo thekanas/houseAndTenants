@@ -1,7 +1,7 @@
 package by.stolybko.service.impl;
 
-import by.stolybko.database.dto.PersonRequestDTO;
-import by.stolybko.database.dto.PersonResponseDTO;
+import by.stolybko.database.dto.request.PersonRequestDTO;
+import by.stolybko.database.dto.response.PersonResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
 import by.stolybko.database.repository.HouseRepository;
@@ -16,6 +16,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +61,7 @@ class PersonServiceImplTest {
 
         when(personMapper.toPersonResponseDTO(personEntity))
                 .thenReturn(expected);
-        when(personRepository.findByUuid(uuid))
+        when(personRepository.findPersonEntityByUuid(uuid))
                 .thenReturn(Optional.of(personEntity));
 
         // when
@@ -85,18 +88,18 @@ class PersonServiceImplTest {
                 .withPersonUuid(uuid2)
                 .build().buildPersonResponseDTO();
 
-        List<PersonEntity> personEntities = List.of(personEntity1, personEntity2);
-        List<PersonResponseDTO> expected = List.of(personResponseDTO1, personResponseDTO2);
+        Page<PersonEntity> personEntities = new PageImpl<>(List.of(personEntity1, personEntity2), Pageable.ofSize(20), 20);
+        Page<PersonResponseDTO> expected = new PageImpl<>(List.of(personResponseDTO1, personResponseDTO2), Pageable.ofSize(20), 20);
 
         when(personMapper.toPersonResponseDTO(personEntity1))
                 .thenReturn(personResponseDTO1);
         when(personMapper.toPersonResponseDTO(personEntity2))
                 .thenReturn(personResponseDTO2);
-        when(personRepository.findAll())
+        when(personRepository.findAll(Pageable.ofSize(20)))
                 .thenReturn(personEntities);
 
         // when
-        List<PersonResponseDTO> actual = personService.getAll();
+        Page<PersonResponseDTO> actual = personService.getAll(Pageable.ofSize(20));
 
         // then
         assertIterableEquals(expected, actual);
@@ -115,7 +118,7 @@ class PersonServiceImplTest {
                 .build().buildHouseEntity();
         when(personMapper.toPersonEntity(personRequestDTO))
                 .thenReturn(personEntity);
-        when(houseRepository.findByUuid(personRequestDTO.houseUuid()))
+        when(houseRepository.findHouseEntityByUuid(personRequestDTO.houseUuid()))
                 .thenReturn(Optional.of(houseEntity));
 
         // when
@@ -151,16 +154,16 @@ class PersonServiceImplTest {
 
         when(personMapper.update(any(), any()))
                 .thenReturn(personUpdate);
-        when(personRepository.findByUuid(personUuid))
+        when(personRepository.findPersonEntityByUuid(personUuid))
                 .thenReturn(Optional.of(personOld));
-        when(houseRepository.findByUuid(personRequestDTO.houseUuid()))
+        when(houseRepository.findHouseEntityByUuid(personRequestDTO.houseUuid()))
                 .thenReturn(Optional.of(houseEntity));
 
         // when
         personService.update(personUuid, personRequestDTO);
 
         // then
-        verify(personRepository).update(personCaptor.capture());
+        verify(personRepository).save(personCaptor.capture());
         assertThat(personCaptor.getValue())
                 .isEqualTo(personUpdate)
                 .hasFieldOrPropertyWithValue(PersonEntity.Fields.house, houseEntity);
@@ -175,7 +178,7 @@ class PersonServiceImplTest {
         personService.delete(uuid);
 
         // then
-        verify(personRepository).delete(uuid);
+        verify(personRepository).deletePersonEntityByUuid(uuid);
     }
 
     @Test
@@ -207,8 +210,10 @@ class PersonServiceImplTest {
                 .withTenants(tenants)
                 .build().buildHouseEntity();
 
-        when(houseRepository.findByUuid(uuid))
+        when(houseRepository.findHouseEntityByUuid(uuid))
                 .thenReturn(Optional.of(house));
+        when(personRepository.findPersonEntitiesByHouseUuid(uuid))
+                .thenReturn(tenants);
         when(personMapper.toPersonResponseDTO(tenant1))
                 .thenReturn(personResponseDTO1);
         when(personMapper.toPersonResponseDTO(tenant2))

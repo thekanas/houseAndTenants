@@ -87,6 +87,7 @@ Spring Boot.
 Spring Data Repositories.
 Spring Data JPA.
 
+
 Endpoints
 ---
 
@@ -184,23 +185,59 @@ body:
     ]
 }
 
-частичное обновление Person:
-PATCH http://localhost:8080/person/4208483b-4133-49d2-b7b5-74baee38c9a1
-body:
-{
-    "name": "TestName11++",
-}
-
-частичное обновление House:
-PATCH http://localhost:8080/house/198bd00f-ba22-4b6d-994f-03925803440f
-body:
-{
-    "area": "130m2",
-
-}
-
 удаление Person:
 DELETE http://localhost:8080/person/4208483b-4133-49d2-b7b5-74baee38c9a1
 
 удаление House:
 DELETE http://localhost:8080/person/4208483b-4133-49d2-b7b5-74baee38c9a1
+~~~
+
+UPDATE
+---
+Берём за основу существующее приложение и переезжаем на Spring boot 3.2.* в ветке feature/boot
+
+- Добавляем сущность HouseHistory (id, house_id, person_id, date, type)
+type [OWNER, TENANT]
+- Создать свой тип данных в БД
+- Хранить как enum в коде
+- При смене места жительства добавляем запись в HouseHistory [type = TENANT], с текущей датой
+- При смене владельца, добавляем запись в HouseHistory [type = OWNER], с текущей датой
+- *Реализовать через триггер в БД
+- *Если используется миграция, дописать новый changeset, а не исправлять существующие.
+
+Добавляем методы:
+- GET для получения всех Person когда-либо проживавших в доме
+- GET для получения всех Person когда-либо владевших домом
+- GET для получения всех House где проживал Person
+- GET для получения всех House которыми когда-либо владел Person
+
+Добавляем кэш из задания по рефлексии на сервисный слой House и Person.
+Добавляем Integration тесты, чтобы кэш работал в многопоточной среде.
+Делаем экзекутор на 6 потоков и параллельно вызываем сервисный слой (GET\POST\PUT\DELETE) и проверяем, что результат соответствует ожиданиям.
+Используем H2 или *testcontainers
+
+- *Добавляем swagger (OPEN API)
+- ** Добавляем starter:
+- **Реализовываем мультипроект
+- **Реализовываем свой cache-starter (из задания по рефлексии)
+- **Добавляем таску с build в mavenLocal
+- **Добавляем стартер в основное приложение, через mavelLocal
+- **Удаляем все классы из основного приложения
+
+Swagger: 
+http://localhost:8080/swagger-ui/index.html#/
+
+Новые эндпойнты:
+~~~
+Возвращает всех Person ранее проживавших в доме с указанным UUID:
+GET http://localhost:8080/history/tenants/house/{houseUuid}
+
+Возвращает всех Person ранее владевших домом с указанным UUID
+GET http://localhost:8080/history/owners/house/{houseUuid}
+
+Возвращает все House в которых ранее проживал Person с указанным UUID
+GET http://localhost:8080/history/houses/tenant/{tenantUuid}
+
+Возвращает все House которыми ранее владел Person с указанным UUID
+GET http://localhost:8080/history/houses/owner/{ownerUuid}
+~~~

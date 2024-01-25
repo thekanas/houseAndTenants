@@ -1,16 +1,23 @@
-database:
-  user: postgres
-  password: postgres
-  url: jdbc:postgresql://localhost:5432/house_and_tenants
-  driver: org.postgresql.Driver
-  pool.size: 10
+spring:
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/house_and_tenants
+    driver-class-name: org.postgresql.Driver
 
-hibernate:
-  show_sql: true
-  format_sql: true
-  hbm2ddl.auto: validate
-  dialect: org.hibernate.dialect.PostgresPlusDialect
+  jpa:
+    properties.hibernate:
+        use_sql_comments: true
+        format_sql: true
+        show_sql: true
+        hbm2ddl.auto: validate
 
-liquibase:
-  changelog: db.changelog/db.changelog-master.yaml
-  databaseAutoInitialization: true
+  liquibase:
+    changelog: db.changelog/db.changelog-master.yaml
+    enabled: true
+
+
+cache:
+  #LRU or LFU
+  algorithm: LRU
+  capacity: 3

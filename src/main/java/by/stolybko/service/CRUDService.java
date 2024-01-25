@@ -1,15 +1,16 @@
 package by.stolybko.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
-public interface CRUDService<Response, Request> {
+public interface CRUDService<RESPONSE, REQUEST> {
 
-    Response getByUuid(UUID uuid);
-    List<Response> getAll();
-    void create(Request dto);
-    void update(UUID uuid, Request dto);
-    void patch(UUID uuid, Request dto);
+    RESPONSE getByUuid(UUID uuid);
+    Page<RESPONSE> getAll(Pageable pageable);
+    void create(REQUEST dto);
+    void update(UUID uuid, REQUEST dto);
     void delete(UUID uuid);
 
 }

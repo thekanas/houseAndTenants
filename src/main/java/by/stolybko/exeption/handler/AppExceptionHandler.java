@@ -1,38 +1,44 @@
 package by.stolybko.exeption.handler;
 
+import by.stolybko.database.dto.ValidationErrorResponse;
+import by.stolybko.database.dto.Violation;
 import by.stolybko.exeption.EntityNotCreatedException;
 import by.stolybko.exeption.EntityNotFoundException;
-import by.stolybko.exeption.ErrorMessage;
-import by.stolybko.exeption.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.List;
 
 @RestControllerAdvice
-public class AppExceptionHandler extends ResponseEntityExceptionHandler {
+public class AppExceptionHandler {
 
-    @ExceptionHandler()
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException e) {
-
-        return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), "404"));
+    public ResponseEntity<Violation> handleEntityNotFoundException(EntityNotFoundException e) {
+        Violation violation = new Violation("uuid", e.getMessage());
+        return ResponseEntity.badRequest().body(violation);
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler(EntityNotCreatedException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorMessage> handleEntityNotCreatedException(EntityNotCreatedException e) {
-
-        return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), "400"));
+    public ResponseEntity<Violation> handleEntityNotCreatedException(EntityNotCreatedException e) {
+        Violation violation = new Violation("n/a", e.getMessage());
+        return ResponseEntity.badRequest().body(violation);
     }
 
-    @ExceptionHandler(ValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorMessage> validationException(ValidationException e) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ValidationErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
-        return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), "400"));
+        final List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> new Violation(error.getField(), error.getDefaultMessage()))
+                .toList();
+
+        return ResponseEntity.badRequest().body(new ValidationErrorResponse(violations));
     }
 
 }

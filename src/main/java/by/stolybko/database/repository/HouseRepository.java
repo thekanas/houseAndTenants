@@ -1,29 +1,19 @@
 package by.stolybko.database.repository;
 
 import by.stolybko.database.entity.HouseEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class HouseRepository extends RepositoryBase<UUID, HouseEntity> {
+public interface HouseRepository extends JpaRepository<HouseEntity, Long> {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    public HouseRepository() {
-        super(HouseEntity.class);
-    }
-
-    @Override
-    public List<HouseEntity> findAll() {
-
-        return jdbcTemplate.query("SELECT * FROM house", new HouseMapper());
-
-    }
+    Optional<HouseEntity> findHouseEntityByUuid(UUID houseUuid);
+    void deleteHouseEntityByUuid(UUID houseUuid);
+    List<HouseEntity> findAllByOwners_Uuid(UUID personUuid);
 }
 
 

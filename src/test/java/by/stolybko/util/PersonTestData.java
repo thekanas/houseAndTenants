@@ -1,7 +1,7 @@
 package by.stolybko.util;
 
-import by.stolybko.database.dto.PersonRequestDTO;
-import by.stolybko.database.dto.PersonResponseDTO;
+import by.stolybko.database.dto.request.PersonRequestDTO;
+import by.stolybko.database.dto.response.PersonResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.Passport;
 import by.stolybko.database.entity.PersonEntity;

@@ -1,5 +1,6 @@
 package by.stolybko.database.entity;
 
+import by.stolybko.database.dto.response.BaseResponseDTO;
 import by.stolybko.database.entity.enam.Sex;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -7,6 +8,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -58,7 +60,7 @@ public class PersonEntity implements BaseEntity<UUID> {
     @Embedded
     private Passport passport;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", nullable = false)
     private HouseEntity house;
 

@@ -1,7 +1,7 @@
 package by.stolybko.service.impl;
 
-import by.stolybko.database.dto.HouseRequestDTO;
-import by.stolybko.database.dto.HouseResponseDTO;
+import by.stolybko.database.dto.request.HouseRequestDTO;
+import by.stolybko.database.dto.response.HouseResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
 import by.stolybko.database.repository.HouseRepository;
@@ -9,6 +9,7 @@ import by.stolybko.database.repository.PersonRepository;
 import by.stolybko.service.mapper.HouseMapper;
 import by.stolybko.util.HouseTestData;
 import by.stolybko.util.PersonTestData;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -16,6 +17,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +64,7 @@ class HouseServiceImplTest {
 
         when(houseMapper.toHouseResponseDTO(houseEntity))
                 .thenReturn(expected);
-        when(houseRepository.findByUuid(uuid))
+        when(houseRepository.findHouseEntityByUuid(uuid))
                 .thenReturn(Optional.of(houseEntity));
 
         // when
@@ -87,18 +91,18 @@ class HouseServiceImplTest {
                 .withHouseUuid(uuid2)
                 .build().buildHouseResponseDTO();
 
-        List<HouseEntity> houseEntities = List.of(houseEntity1, houseEntity2);
-        List<HouseResponseDTO> expected = List.of(houseResponseDTO1, houseResponseDTO2);
+        Page<HouseEntity> houseEntities = new PageImpl<>(List.of(houseEntity1, houseEntity2), Pageable.ofSize(20), 20);
+        Page<HouseResponseDTO> expected = new PageImpl<>(List.of(houseResponseDTO1, houseResponseDTO2), Pageable.ofSize(20), 20);
 
         when(houseMapper.toHouseResponseDTO(houseEntity1))
                 .thenReturn(houseResponseDTO1);
         when(houseMapper.toHouseResponseDTO(houseEntity2))
                 .thenReturn(houseResponseDTO2);
-        when(houseRepository.findAll())
+        when(houseRepository.findAll(Pageable.ofSize(20)))
                 .thenReturn(houseEntities);
 
         // when
-        List<HouseResponseDTO> actual = houseService.getAll();
+        Page<HouseResponseDTO> actual = houseService.getAll(Pageable.ofSize(20));
 
         // then
         assertIterableEquals(expected, actual);
@@ -130,9 +134,9 @@ class HouseServiceImplTest {
 
         when(houseMapper.toHouseEntity(houseRequestDTO))
                 .thenReturn(houseEntity);
-        when(personRepository.findByUuid(ownerUuid1))
+        when(personRepository.findPersonEntityByUuid(ownerUuid1))
                 .thenReturn(Optional.of(owner1));
-        when(personRepository.findByUuid(ownerUuid2))
+        when(personRepository.findPersonEntityByUuid(ownerUuid2))
                 .thenReturn(Optional.of(owner2));
 
         // when
@@ -185,20 +189,20 @@ class HouseServiceImplTest {
                 .withOwners(owners)
                 .build().buildHouseEntity();
 
-        when(houseRepository.findByUuid(houseUuid))
+        when(houseRepository.findHouseEntityByUuid(houseUuid))
                 .thenReturn(Optional.of(houseOld));
         when(houseMapper.update(any(), any()))
                 .thenReturn(houseUpdate);
-        when(personRepository.findByUuid(ownerUuid1))
+        when(personRepository.findPersonEntityByUuid(ownerUuid1))
                 .thenReturn(Optional.of(owner1));
-        when(personRepository.findByUuid(ownerUuid2))
+        when(personRepository.findPersonEntityByUuid(ownerUuid2))
                 .thenReturn(Optional.of(owner2));
 
         // when
         houseService.update(houseUuid, houseRequestDTO);
 
         // then
-        verify(houseRepository).update(houseCaptor.capture());
+        verify(houseRepository).save(houseCaptor.capture());
         assertThat(houseCaptor.getValue())
                 .isEqualTo(houseUpdate)
                 .hasFieldOrPropertyWithValue(HouseEntity.Fields.owners, owners);
@@ -214,7 +218,7 @@ class HouseServiceImplTest {
         houseService.delete(uuid);
 
         // then
-        verify(houseRepository).delete(uuid);
+        verify(houseRepository).deleteHouseEntityByUuid(uuid);
     }
 
 
@@ -245,8 +249,10 @@ class HouseServiceImplTest {
                 .build().buildPersonEntity();
         personEntity.setOwnership(ownership);
 
-        when(personRepository.findByUuid(personUuid))
+        when(personRepository.findPersonEntityByUuid(personUuid))
                 .thenReturn(Optional.of(personEntity));
+        when(houseRepository.findAllByOwners_Uuid(personUuid))
+                .thenReturn(ownership);
         when(houseMapper.toHouseResponseDTO(houseEntity1))
                 .thenReturn(houseResponseDTO1);
         when(houseMapper.toHouseResponseDTO(houseEntity2))

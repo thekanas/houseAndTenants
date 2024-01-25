@@ -1,7 +1,7 @@
 package by.stolybko.util;
 
-import by.stolybko.database.dto.HouseRequestDTO;
-import by.stolybko.database.dto.HouseResponseDTO;
+import by.stolybko.database.dto.request.HouseRequestDTO;
+import by.stolybko.database.dto.response.HouseResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
 import lombok.Builder;

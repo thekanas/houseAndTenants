@@ -1,7 +1,7 @@
 package by.stolybko.service;
 
-import by.stolybko.database.dto.PersonRequestDTO;
-import by.stolybko.database.dto.PersonResponseDTO;
+import by.stolybko.database.dto.request.PersonRequestDTO;
+import by.stolybko.database.dto.response.PersonResponseDTO;
 
 import java.util.List;
 import java.util.UUID;

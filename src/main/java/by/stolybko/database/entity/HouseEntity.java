@@ -1,6 +1,6 @@
 package by.stolybko.database.entity;
 
-import jakarta.persistence.CascadeType;
+import by.stolybko.database.dto.response.BaseResponseDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +26,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 

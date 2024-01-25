@@ -1,7 +1,7 @@
 package by.stolybko.service;
 
-import by.stolybko.database.dto.HouseRequestDTO;
-import by.stolybko.database.dto.HouseResponseDTO;
+import by.stolybko.database.dto.request.HouseRequestDTO;
+import by.stolybko.database.dto.response.HouseResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
