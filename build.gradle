@@ -25,11 +25,7 @@ java {
 }
 
 ext {
-    junitVersion = '5.9.2'
-    mockitoVersion = '5.6.0'
     mapstructVersion = '1.5.5.Final'
-    springVersion = '6.1.2'
-    hibernateVersion = '6.4.1.Final'
 }
 
 dependencies {
@@ -51,8 +47,6 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "org.testcontainers:postgresql:1.19.3"
-
-
 
 }
 

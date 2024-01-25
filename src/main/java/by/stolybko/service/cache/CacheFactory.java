@@ -2,8 +2,6 @@ package by.stolybko.service.cache;
 
 
 import by.stolybko.database.dto.response.BaseResponseDTO;
-import by.stolybko.database.dto.response.PersonResponseDTO;
-
 import by.stolybko.service.cache.impl.LFUCache;
 import by.stolybko.service.cache.impl.LRUCache;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -29,4 +27,5 @@ public class CacheFactory {
             default -> null;
         };
     }
+
 }

@@ -1,8 +1,6 @@
 package by.stolybko;
 
 import by.stolybko.database.dto.response.BaseResponseDTO;
-import by.stolybko.database.dto.response.PersonResponseDTO;
-
 import by.stolybko.service.cache.Cache;
 import by.stolybko.service.cache.CacheFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,4 +27,5 @@ public class ApplicationRunner {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationRunner.class, args);
     }
+
 }
