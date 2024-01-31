@@ -2,7 +2,7 @@ package by.stolybko.controller;
 
 import by.stolybko.database.dto.response.HouseHistoryResponseDTO;
 import by.stolybko.database.dto.response.PersonHistoryResponseDTO;
-import by.stolybko.service.impl.HouseHistoryServiceImpl;
+import by.stolybko.service.HouseHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @Tag(name = "House History controller", description = "The House History API")
 public class HouseHistoryController {
 
-    private final HouseHistoryServiceImpl houseHistoryService;
+    private final HouseHistoryService houseHistoryService;
 
     @GetMapping("/tenants/house/{houseUuid}")
     @Operation(summary = "Возвращает всех Person ранее проживавших в доме с указанным UUID")

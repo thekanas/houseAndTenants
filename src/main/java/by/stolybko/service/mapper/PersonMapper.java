@@ -1,16 +1,13 @@
 package by.stolybko.service.mapper;
 
-import by.stolybko.database.dto.response.PersonHistoryResponseDTO;
 import by.stolybko.database.dto.request.PersonRequestDTO;
+import by.stolybko.database.dto.response.PersonHistoryResponseDTO;
 import by.stolybko.database.dto.response.PersonResponseDTO;
 import by.stolybko.database.entity.HouseHistory;
 import by.stolybko.database.entity.PersonEntity;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -31,7 +28,4 @@ public interface PersonMapper {
 
     PersonEntity update(@MappingTarget PersonEntity personEntity, PersonRequestDTO personRequestDTO);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    PersonEntity merge(@MappingTarget PersonEntity personEntity, PersonRequestDTO personRequestDTO);
 }

@@ -44,24 +44,26 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     @Transactional
-    public void create(HouseRequestDTO dto) {
+    public HouseResponseDTO create(HouseRequestDTO dto) {
         HouseEntity savedHouse = houseMapper.toHouseEntity(dto);
 
         setOwners(savedHouse, dto);
 
-        houseRepository.save(savedHouse);
+        savedHouse = houseRepository.save(savedHouse);
+        return houseMapper.toHouseResponseDTO(savedHouse);
     }
 
     @Override
     @Transactional
-    public void update(UUID uuid, HouseRequestDTO dto) {
+    public HouseResponseDTO update(UUID uuid, HouseRequestDTO dto) {
         HouseEntity house = houseRepository.findHouseEntityByUuid(uuid)
                 .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, uuid));
         HouseEntity updatedHouse = houseMapper.update(house, dto);
 
         setOwners(updatedHouse, dto);
 
-        houseRepository.save(updatedHouse);
+        updatedHouse = houseRepository.save(updatedHouse);
+        return houseMapper.toHouseResponseDTO(updatedHouse);
     }
 
     @Override

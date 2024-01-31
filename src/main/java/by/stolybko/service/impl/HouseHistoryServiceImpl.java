@@ -37,10 +37,9 @@ public class HouseHistoryServiceImpl implements HouseHistoryService {
         HouseEntity house = houseRepository.findHouseEntityByUuid(houseUuid)
                 .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, houseUuid));
 
-        List<HouseHistory> tenants = houseHistoryRepository.findPersonsByHouse(house);
+        List<HouseHistory> tenants = houseHistoryRepository.findPersonsByHouseAndType(house, Type.TENANT);
 
         return tenants.stream()
-                .filter(h -> h.getType() == Type.TENANT)
                 .map(personMapper::toPersonHistoryResponseDTO)
                 .toList();
 
@@ -51,10 +50,9 @@ public class HouseHistoryServiceImpl implements HouseHistoryService {
         HouseEntity house = houseRepository.findHouseEntityByUuid(houseUuid)
                 .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, houseUuid));
 
-        List<HouseHistory> owners = houseHistoryRepository.findPersonsByHouse(house);
+        List<HouseHistory> owners = houseHistoryRepository.findPersonsByHouseAndType(house, Type.OWNER);
 
         return owners.stream()
-                .filter(h -> h.getType() == Type.OWNER)
                 .map(personMapper::toPersonHistoryResponseDTO)
                 .toList();
 
@@ -65,24 +63,22 @@ public class HouseHistoryServiceImpl implements HouseHistoryService {
         PersonEntity personEntity = personRepository.findPersonEntityByUuid(tenantUuid)
                 .orElseThrow(() -> EntityNotFoundException.of(PersonResponseDTO.class, tenantUuid));
 
-        List<HouseHistory> houses = houseHistoryRepository.findHousesByPerson(personEntity);
+        List<HouseHistory> houses = houseHistoryRepository.findHousesByPersonAndType(personEntity, Type.TENANT);
 
         return houses.stream()
-                .filter(h -> h.getType() == Type.TENANT)
                 .map(houseMapper::toHouseHistoryResponseDTO)
                 .toList();
 
     }
 
     @Override
-    public List<HouseHistoryResponseDTO> getHousesHistoryByPersonOwnerUuid(UUID tenantUuid) {
-        PersonEntity personEntity = personRepository.findPersonEntityByUuid(tenantUuid)
-                .orElseThrow(() -> EntityNotFoundException.of(PersonResponseDTO.class, tenantUuid));
+    public List<HouseHistoryResponseDTO> getHousesHistoryByPersonOwnerUuid(UUID ownerUuid) {
+        PersonEntity personEntity = personRepository.findPersonEntityByUuid(ownerUuid)
+                .orElseThrow(() -> EntityNotFoundException.of(PersonResponseDTO.class, ownerUuid));
 
-        List<HouseHistory> houses = houseHistoryRepository.findHousesByPerson(personEntity);
+        List<HouseHistory> houses = houseHistoryRepository.findHousesByPersonAndType(personEntity, Type.OWNER);
 
         return houses.stream()
-                .filter(h -> h.getType() == Type.OWNER)
                 .map(houseMapper::toHouseHistoryResponseDTO)
                 .toList();
 

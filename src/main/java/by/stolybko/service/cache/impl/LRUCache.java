@@ -19,8 +19,8 @@ public class LRUCache<K, V> implements Cache<K, V> {
     private final DoubleLinkedList<K, V> list = new DoubleLinkedList<>();
     private final int CACHE_CAPACITY;
 
-    public LRUCache(int cache_capacity) {
-        CACHE_CAPACITY = cache_capacity;
+    public LRUCache(int cacheCapacity) {
+        CACHE_CAPACITY = cacheCapacity;
     }
 
     /**

@@ -25,8 +25,8 @@ public class LFUCache<K, V> implements Cache<K, V> {
     private Long size = 0L;
     private final int CACHE_CAPACITY;
 
-    public LFUCache(int cache_capacity) {
-        CACHE_CAPACITY = cache_capacity;
+    public LFUCache(int cacheCapacity) {
+        CACHE_CAPACITY = cacheCapacity;
     }
 
     /**

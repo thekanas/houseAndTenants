@@ -2,7 +2,6 @@ package by.stolybko.aspect;
 
 
 import by.stolybko.database.dto.response.BaseResponseDTO;
-
 import by.stolybko.service.cache.Cache;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -65,7 +64,7 @@ public class CacheAspect {
         if (cachedObj.isPresent()) {
             return cachedObj.get();
         } else {
-            Optional<BaseResponseDTO> returnObj = Optional.ofNullable( (BaseResponseDTO) proceedingJoinPoint.proceed());
+            Optional<BaseResponseDTO> returnObj = Optional.ofNullable((BaseResponseDTO) proceedingJoinPoint.proceed());
             returnObj.ifPresent(o -> cache.putInCache(uuid, o));
 
             return returnObj.get();
@@ -79,7 +78,7 @@ public class CacheAspect {
     @SuppressWarnings("unchecked")
     @AfterReturning(value = "createServiceMethod()", returning = "result")
     public void cachingSave(Object result) {
-        Optional<BaseResponseDTO> entity = (Optional<BaseResponseDTO>) result;
+        Optional<BaseResponseDTO> entity = Optional.ofNullable((BaseResponseDTO) result);
         entity.ifPresent(baseEntity -> cache.putInCache((UUID) baseEntity.getUuid(), baseEntity));
     }
 
@@ -89,8 +88,9 @@ public class CacheAspect {
     @SuppressWarnings("unchecked")
     @AfterReturning(value = "updateServiceMethod()", returning = "result")
     public void cachingUpdate(Object result) {
-        Optional<BaseResponseDTO> entity = (Optional<BaseResponseDTO>) result;
-        entity.ifPresent(baseEntity -> cache.putInCache((UUID) baseEntity.getUuid(), baseEntity));
+        Optional<BaseResponseDTO> entity = Optional.ofNullable((BaseResponseDTO) result);
+        entity.ifPresent(baseResponseDTO -> cache.putInCache((UUID) baseResponseDTO.getUuid(), baseResponseDTO));
+
     }
 
     /**

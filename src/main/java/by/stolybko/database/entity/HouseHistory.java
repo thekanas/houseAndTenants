@@ -50,7 +50,8 @@ public class HouseHistory {
     private LocalDateTime exitDate;
 
     @Column(name = "type")
-    @Enumerated(EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
+    //@JdbcType(PostgreSQLEnumJdbcType.class)
     private Type type;
 
 }

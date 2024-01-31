@@ -2,11 +2,14 @@ package by.stolybko.util;
 
 import by.stolybko.database.dto.request.HouseRequestDTO;
 import by.stolybko.database.dto.response.HouseResponseDTO;
+import by.stolybko.database.dto.response.PersonResponseDTO;
 import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +20,9 @@ import java.util.UUID;
 @Builder(setterPrefix = "with", toBuilder = true)
 @Accessors(chain = true)
 public class HouseTestData {
+
+    @Builder.Default
+    private Long id = 1L;
 
     @Builder.Default
     private UUID houseUuid = UUID.fromString("05486810-43dd-41e8-ab60-98aa2d200acb");
@@ -49,7 +55,7 @@ public class HouseTestData {
     private List<UUID> ownersUuid = new ArrayList<>();
 
     public HouseEntity buildHouseEntity() {
-        return new HouseEntity(1L, houseUuid, area, country, city, street, number, createDate, tenants, owners);
+        return new HouseEntity(id, houseUuid, area, country, city, street, number, createDate, tenants, owners);
     }
 
     public HouseRequestDTO buildHouseRequestDTO() {
@@ -60,5 +66,9 @@ public class HouseTestData {
         return new HouseResponseDTO(houseUuid, area, country, city, street, number, createDate);
     }
 
+    public Page<HouseResponseDTO> buildPageHouseResponseDTO() {
+        List<HouseResponseDTO> houseResponseDTO = List.of(buildHouseResponseDTO(), buildHouseResponseDTO());
+        return new PageImpl<>(houseResponseDTO);
+    }
 
 }

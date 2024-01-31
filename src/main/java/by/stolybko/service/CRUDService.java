@@ -9,8 +9,8 @@ public interface CRUDService<RESPONSE, REQUEST> {
 
     RESPONSE getByUuid(UUID uuid);
     Page<RESPONSE> getAll(Pageable pageable);
-    void create(REQUEST dto);
-    void update(UUID uuid, REQUEST dto);
+    RESPONSE create(REQUEST dto);
+    RESPONSE update(UUID uuid, REQUEST dto);
     void delete(UUID uuid);
 
 }

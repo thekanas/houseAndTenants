@@ -45,22 +45,23 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     @Transactional
-    public void create(PersonRequestDTO dto) {
+    public PersonResponseDTO create(PersonRequestDTO dto) {
         PersonEntity savedPerson = personMapper.toPersonEntity(dto);
         HouseEntity house = houseRepository.findHouseEntityByUuid(dto.houseUuid())
                 .orElseThrow(() -> EntityNotFoundException.of(HouseEntity.class, dto.houseUuid()));
         savedPerson.setHouse(house);
 
         try {
-            personRepository.save(savedPerson);
+            savedPerson = personRepository.save(savedPerson);
         } catch (Exception e) {
             throw new EntityNotCreatedException(e.getCause().getCause().getMessage());
         }
+        return personMapper.toPersonResponseDTO(savedPerson);
     }
 
     @Override
     @Transactional
-    public void update(UUID uuid, PersonRequestDTO dto) {
+    public PersonResponseDTO update(UUID uuid, PersonRequestDTO dto) {
         PersonEntity updatedPerson = personRepository.findPersonEntityByUuid(uuid)
                 .orElseThrow(() -> EntityNotFoundException.of(PersonEntity.class, uuid));
         HouseEntity house = houseRepository.findHouseEntityByUuid(dto.houseUuid())
@@ -68,7 +69,8 @@ public class PersonServiceImpl implements PersonService {
         updatedPerson = personMapper.update(updatedPerson, dto);
         updatedPerson.setHouse(house);
 
-        personRepository.save(updatedPerson);
+        updatedPerson = personRepository.save(updatedPerson);
+        return personMapper.toPersonResponseDTO(updatedPerson);
     }
 
     @Override

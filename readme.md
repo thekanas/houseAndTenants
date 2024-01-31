@@ -241,3 +241,13 @@ GET http://localhost:8080/history/houses/tenant/{tenantUuid}
 Возвращает все House которыми ранее владел Person с указанным UUID
 GET http://localhost:8080/history/houses/owner/{ownerUuid}
 ~~~
+
+UPDATE
+---
+Берём за основу существующее приложение и покрываем его тестами на 80%, используя средства Spring для тестирования:
+- testcontainers
+- mockMvc
+
+Отчёт о покрытии тестами:
+![reports](img/test1.png)
+![reports](img/test2.png)
