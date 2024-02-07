@@ -16,8 +16,12 @@ spring:
     changelog: db.changelog/db.changelog-master.yaml
     enabled: true
 
-
 cache:
   #LRU or LFU
   algorithm: LRU
   capacity: 3
+
+app:
+  common:
+    logging:
+      level: ERROR

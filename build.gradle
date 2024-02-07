@@ -10,6 +10,7 @@ group 'by.stolybko'
 version '1.1'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -30,6 +31,7 @@ ext {
 
 dependencies {
 
+    implementation 'by.stolybko:service-logging-starter:1.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
