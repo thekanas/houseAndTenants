@@ -10,10 +10,12 @@ import by.stolybko.database.entity.enam.Type;
 import by.stolybko.database.repository.HouseHistoryRepository;
 import by.stolybko.database.repository.HouseRepository;
 import by.stolybko.database.repository.PersonRepository;
-import by.stolybko.exeption.EntityNotFoundException;
+
 import by.stolybko.service.HouseHistoryService;
 import by.stolybko.service.mapper.HouseMapper;
 import by.stolybko.service.mapper.PersonMapper;
+import by.stolybko.handler.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

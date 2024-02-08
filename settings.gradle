@@ -1,3 +1,4 @@
 rootProject.name = 'houseAndTenants'
 include 'service-logging-starter'
+include 'exception-handler-starter'
 

@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id "io.freefair.lombok" version "6.5.1"
+    id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
@@ -10,8 +11,8 @@ version '1.0'
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
-
 
 publishing {
     publications {
@@ -20,17 +21,24 @@ publishing {
 
             from components.java
 
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
         }
     }
 }
 
 dependencies {
 
-    implementation 'org.springframework.boot:spring-boot-starter-aop:3.2.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.projectlombok:lombok'
 
 }
-
 
 tasks.named("build") {
     finalizedBy('publishToMavenLocal')

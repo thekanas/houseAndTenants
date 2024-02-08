@@ -251,3 +251,12 @@ UPDATE
 Отчёт о покрытии тестами:
 ![reports](img/test1.png)
 ![reports](img/test2.png)
+
+UPDATE
+---
+* Добавить в свой проект оправданный spring aop
+* ,,, Попробовать написать свой стартер по отлову exception’ов в своём приложении
+
+- -Добавлен стартер для логирования с помощью aop и стартер для обработки exception’ов.
+- -Перед выполнением build корневого проекта, необходимо выполнить таски build для модулей exception-handler-starter и service-logging-starter
+

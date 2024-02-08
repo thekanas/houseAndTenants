@@ -6,7 +6,7 @@ import by.stolybko.database.entity.HouseEntity;
 import by.stolybko.database.entity.PersonEntity;
 import by.stolybko.database.repository.HouseRepository;
 import by.stolybko.database.repository.PersonRepository;
-import by.stolybko.exeption.EntityNotFoundException;
+import by.stolybko.handler.EntityNotFoundException;
 import by.stolybko.service.HouseService;
 import by.stolybko.service.mapper.HouseMapper;
 import lombok.RequiredArgsConstructor;

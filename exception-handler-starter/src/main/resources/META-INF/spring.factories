@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+by.stolybko.logging.config.HandlerAutoConfiguration

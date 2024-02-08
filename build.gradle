@@ -32,6 +32,8 @@ ext {
 dependencies {
 
     implementation 'by.stolybko:service-logging-starter:1.0'
+    implementation 'by.stolybko:exception-handler-starter:1.0'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -39,7 +41,7 @@ dependencies {
 
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.projectlombok:lombok'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.3'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.4'
 
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
