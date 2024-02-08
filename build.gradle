@@ -1,15 +1,23 @@
 plugins {
     id 'java'
-    id 'war'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
     id "io.freefair.lombok" version "6.5.1"
     id 'jacoco'
 }
 
 group 'by.stolybko'
-version '1.0'
+version '1.1'
 
 repositories {
+    mavenLocal()
     mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 java {
@@ -18,41 +26,40 @@ java {
 }
 
 ext {
-    junitVersion = '5.9.2'
-    mockitoVersion = '5.6.0'
     mapstructVersion = '1.5.5.Final'
-    springVersion = '6.1.2'
-    hibernateVersion = '6.4.1.Final'
 }
 
 dependencies {
 
-    //implementation "org.springframework:spring-context:${springVersion}"
-    implementation "org.springframework:spring-webmvc:${springVersion}"
+    implementation 'by.stolybko:service-logging-starter:1.0'
+    implementation 'by.stolybko:exception-handler-starter:1.0'
 
-    implementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation 'com.zaxxer:HikariCP:5.0.0'
+    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.projectlombok:lombok'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.4'
 
-    runtimeOnly 'org.postgresql:postgresql:42.6.0'
-
-    implementation 'org.liquibase:liquibase-core:4.25.0'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
 
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
-    implementation 'org.apache.tomcat:tomcat-jdbc:10.1.13'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testcontainers:postgresql:1.19.3"
 
-    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
-    testImplementation 'org.assertj:assertj-core:3.24.2'
-
-    testImplementation"org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testRuntimeOnly"org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-    testImplementation"org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 }
 
 test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add('-parameters')
 }
 
 test.finalizedBy jacocoTestReport
